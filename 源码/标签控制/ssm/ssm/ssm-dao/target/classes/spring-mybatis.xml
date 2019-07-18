@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!--dataSource-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:oracle:thin:@192.168.211.139:1521:orcl"/>
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+        <property name="username" value="ssm"/>
+        <property name="password" value="ssm"/>
+    </bean>
+
+    <!--SqlSessionFactoryBean-->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--配置对应插件-->
+        <property name="plugins">
+            <array>
+                <!--分页插件拦截器-->
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <!--分页参数对应属性-->
+                    <property name="properties">
+                        <props>
+                            <!--指定数据库[数据库类型]-->
+                            <prop key="helperDialect">oracle</prop>
+                            <!--reasonable,分页合理化参数-->
+                            <prop key="reasonable">true</prop>
+                        </props>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+
+    <!--接口扫描-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--指定接口包-->
+        <property name="basePackage" value="com.itheima.dao" />
+    </bean>
+
+</beans>

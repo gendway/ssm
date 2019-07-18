@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--放行的地址-->
+    <security:http pattern="/*.jsp" security="none" />
+    <security:http pattern="/**.jsp" security="none" />
+    <security:http pattern="/css/**" security="none" />
+    <security:http pattern="/img/**" security="none" />
+    <security:http pattern="/plugins/**" security="none" />
+
+
+    <!--
+        配置要拦截的URL
+        auto-config:自动配置[自动配置那10个过滤器]
+        use-expressions：是否使用SPEL表达式,access="hasRole('ROLE_USER')"
+    -->
+    <security:http auto-config="true" use-expressions="false">
+        <!--
+            pattern="/**":拦截所有请求
+            access="ROLE_USER":表示允许ROLE_USER角色访问上面被拦截的地址
+        -->
+        <security:intercept-url
+            pattern="/**"
+            access="ROLE_USER,ROLE_ADMIN"
+        />
+        <!--access="IS_AUTHENTICATED_ANONYMOUSLY"-->
+        <!--access="hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')"-->
+        <!--access="ROLE_USER,ROLE_ADMIN"-->
+
+        <!--
+            登录配置
+            自定义登录页：login-page="/login.html"  需要放行
+            default-target-url:登录成功后默认跳转地址
+            always-use-default-target="true":总是跳转到默认登录成功的地址
+            authentication-failure-url="/failer.html":登录失败
+            login-processing-url="/login":处理登录的地址
+        -->
+        <security:form-login
+            login-page="/login.jsp"
+            default-target-url="/pages/main"
+            authentication-failure-url="/failer.jsp"
+            login-processing-url="/login"
+            always-use-default-target="true"
+        />
+
+        <!--
+            退出
+            logout-success-url="/login.html":退出后跳转的地址
+            logout-url="/logout":由SpringSecurity处理
+            invalidate-session="true":让当前session无效
+        -->
+        <security:logout
+                invalidate-session="true"
+                logout-url="/logout"
+                logout-success-url="/login.jsp"
+        />
+
+        <!--关闭csrf安全策略-->
+        <security:csrf disabled="true" />
+    </security:http>
+
+
+    <!--授权配置-->
+    <security:authentication-manager>
+        <!--
+            提供一个账号密码
+            user-service-ref:引用用户自定义的认真类
+        -->
+        <security:authentication-provider user-service-ref="userServicesDetailImpl">
+            <!--指定加密算法-->
+            <security:password-encoder ref="encoder" />
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+
+
+    <!--Spring的加盐算法-->
+    <bean class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" id="encoder" />
+
+</beans>

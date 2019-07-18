@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--
+        JDK动态代理：被代理对象必须实现一个接口[或者代理对象就是一个接口]
+        CGLib:对象无需实现一个接口
+    -->
+
+    <!--
+        使用CGLib代理
+        默认使用JDK代理
+        proxy-target-class="true":使用CGLi代理
+    -->
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+
+
+    <!--包扫描-->
+    <context:component-scan base-package="com" />
+
+    <!--注解驱动-->
+    <mvc:annotation-driven />
+
+    <!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--前缀-->
+        <property name="prefix" value="/pages/" />
+        <!--后缀-->
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <!--静态资源过滤-->
+    <mvc:default-servlet-handler />
+
+
+
+    <!--拦截器，权限加载-->
+<!--    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.itheima.interceptor.PermissionInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>-->
+
+
+    <!--导入其他配置-->
+    <import resource="spring.xml" />
+    <import resource="spring-security.xml" />
+
+
+</beans>

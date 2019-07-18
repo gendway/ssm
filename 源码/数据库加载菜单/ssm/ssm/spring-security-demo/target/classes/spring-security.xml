@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--放行的地址-->
+    <security:http pattern="/login.html" security="none" />
+
+
+    <!--
+        配置要拦截的URL
+        auto-config:自动配置[自动配置那10个过滤器]
+        use-expressions：
+    -->
+    <security:http auto-config="true" use-expressions="false">
+        <!--
+            pattern="/**":拦截所有请求
+            access="ROLE_USER":表示允许ROLE_USER角色访问上面被拦截的地址
+        -->
+        <security:intercept-url
+            pattern="/**"
+            access="ROLE_USER"
+        />
+
+        <!--
+            登录配置
+            自定义登录页：login-page="/login.html"  需要放行
+            default-target-url:登录成功后默认跳转地址
+            always-use-default-target="true":总是跳转到默认登录成功的地址
+            authentication-failure-url="/failer.html":登录失败
+            login-processing-url="/login":处理登录的地址
+        -->
+        <security:form-login
+            login-page="/login.html"
+            default-target-url="/success.html"
+            authentication-failure-url="/failer.html"
+            login-processing-url="/login"
+        />
+
+        <!--
+            退出
+            logout-success-url="/login.html":退出后跳转的地址
+            logout-url="/logout":由SpringSecurity处理
+            invalidate-session="true":让当前session无效
+        -->
+        <security:logout
+                invalidate-session="true"
+                logout-url="/logout"
+                logout-success-url="/login.html"
+        />
+
+
+        <!--关闭csrf安全策略-->
+        <security:csrf disabled="true" />
+    </security:http>
+
+
+    <!--授权配置-->
+    <security:authentication-manager>
+        <!--提供一个账号密码-->
+        <security:authentication-provider>
+            <security:user-service>
+                <!--
+                    定义了一个用户，名字是admin，密码使用未加密方式，密码是admin，角色是ROLE_USER
+                -->
+                <security:user name="admin" password="{noop}admin" authorities="ROLE_USER" />
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+
+
+</beans>
